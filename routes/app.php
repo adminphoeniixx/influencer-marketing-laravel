@@ -118,8 +118,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth','role:brand'])->group(function () {
 
-    Route::get('/app/creators', [CreatorDiscoveryController::class, 'index'])
-        ->name('brand.creators.browse');
+   
 
     Route::get('/app/creators/{id}', [CreatorDiscoveryController::class, 'show'])
         ->name('brand.creators.show');
