@@ -1,0 +1,313 @@
+/* HashFame Theme (from your hashfame-theme1-clash.html) */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap');
+
+:root {
+  --bg: #05050a;
+  --surface: #0e0e1a;
+  --surface2: #14142a;
+  --accent: #c8ff00;
+  --accent2: #7b5cff;
+  --text: #f0f0f8;
+  --muted: #7070a0;
+  --border: rgba(255, 255, 255, 0.07);
+  --glow: rgba(200, 255, 0, 0.18);
+  --font-display: 'DM Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { text-decoration: none; color: inherit; }
+
+.container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  background: linear-gradient(to bottom, rgba(5, 5, 10, 0.78), rgba(5, 5, 10, 0.55));
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.brand-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: radial-gradient(circle at top left, var(--accent), var(--accent2));
+  box-shadow: 0 0 0 6px rgba(123, 92, 255, 0.12);
+}
+
+.navlinks {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.navlinks a {
+  padding: 10px 12px;
+  border-radius: 14px;
+  transition: 0.2s ease;
+}
+
+.navlinks a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cta-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(200, 255, 0, 0.9), rgba(123, 92, 255, 0.75));
+  border-color: rgba(200, 255, 0, 0.35);
+  box-shadow: 0 12px 35px rgba(200, 255, 0, 0.12);
+  color: #0b0b11;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 16px 44px rgba(200, 255, 0, 0.16);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hero {
+  padding: 68px 0 54px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -240px -200px auto -200px;
+  height: 520px;
+  background: radial-gradient(circle at 25% 20%, rgba(200, 255, 0, 0.28), transparent 60%),
+              radial-gradient(circle at 70% 10%, rgba(123, 92, 255, 0.22), transparent 55%);
+  filter: blur(28px);
+  z-index: 0;
+}
+
+.hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.kicker {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.kicker-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--accent);
+  box-shadow: 0 0 0 7px rgba(200, 255, 0, 0.1);
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.05;
+  margin: 16px 0 14px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.h1 .glow {
+  background: linear-gradient(90deg, var(--accent), #fff, var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 24px rgba(200, 255, 0, 0.15);
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.card-title {
+  font-weight: 900;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+.muted { color: var(--muted); }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+/* --------- Auth helpers (same theme) --------- */
+.hf-auth-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 0;
+}
+
+.hf-auth-card {
+  width: min(520px, 92vw);
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.hf-field {
+  margin-top: 14px;
+}
+
+.hf-label {
+  display: block;
+  font-weight: 700;
+  color: rgba(240, 240, 248, 0.9);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.hf-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--text);
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.hf-input:focus {
+  border-color: rgba(200, 255, 0, 0.38);
+  box-shadow: 0 0 0 6px rgba(200, 255, 0, 0.10);
+}
+
+.hf-error {
+  margin-top: 8px;
+  color: #ffb3b3;
+  font-size: 13px;
+}
+
+.hf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.hf-pill-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.hf-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.hf-pill input { accent-color: var(--accent); }
+
+.hf-pill.active {
+  border-color: rgba(200, 255, 0, 0.35);
+  box-shadow: 0 0 0 6px rgba(200, 255, 0, 0.08);
+}
+
+.hf-link {
+  color: rgba(200, 255, 0, 0.95);
+  font-weight: 700;
+}
+
+.hf-link:hover { text-decoration: underline; }
+
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .navlinks { display: none; }
+}

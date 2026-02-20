@@ -95,31 +95,34 @@ const dashboardUrl = computed(() => {
         </template>
 
         <!-- BRAND LINKS -->
-        <template v-if="roles.includes('brand')">
-          <SidebarLink
-            href="/app/campaigns/create"
-            icon="➕"
-            :collapsed="collapsed"
-          >
-            Create Campaign
-          </SidebarLink>
+        <!-- BRAND LINKS -->
+      <template v-if="roles.includes('brand')">
 
-          <SidebarLink
-            href="/app/creators"
-            icon="🔍"
-            :collapsed="collapsed"
-          >
-            Find Creators
-          </SidebarLink>
+        <SidebarLink
+          href="/app/campaigns/create"
+          icon="➕"
+          :collapsed="collapsed"
+        >
+          Create Campaign
+        </SidebarLink>
 
-          <SidebarLink
-            href="/app/shortlist"
-            icon="⭐"
-            :collapsed="collapsed"
-          >
-            Shortlist
-          </SidebarLink>
-        </template>
+        <SidebarLink
+          href="/app/creators-view"
+          icon="🔍"
+          :collapsed="collapsed"
+        >
+          Find Creators
+        </SidebarLink>
+
+        <SidebarLink
+          href="/app/shortlist"
+          icon="⭐"
+          :collapsed="collapsed"
+        >
+          Shortlist
+        </SidebarLink>
+
+      </template>
 
         
       </nav>

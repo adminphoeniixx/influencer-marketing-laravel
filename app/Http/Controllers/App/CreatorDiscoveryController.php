@@ -6,131 +6,191 @@ use App\Http\Controllers\Controller;
 use App\Models\Mongo\CreatorProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
 
 class CreatorDiscoveryController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = (int) $request->integer('per_page', 12);
-        $perPage = max(1, min($perPage, 48)); // safety
-        $page    = (int) $request->integer('page', 1);
-        $page    = max(1, $page);
+        $perPage = max(1, min((int)$request->integer('per_page', 12), 48));
+        $page    = max(1, (int)$request->integer('page', 1));
 
-        // Filters
-        $platform     = $request->string('platform')->toString();   // instagram|youtube|twitter
-        $category     = $request->string('category')->toString();   // Tech
-        $location     = $request->string('location')->toString();   // Mumbai
+        $platform     = $request->string('platform')->toString();
+        $category     = $request->string('category')->toString();
+        $location     = $request->string('location')->toString();
         $minFollowers = $request->integer('min_followers', null);
         $maxFollowers = $request->integer('max_followers', null);
+        $minPrice     = $request->input('min_price');
+        $maxPrice     = $request->input('max_price');
+        $sort         = $request->string('sort', 'newest')->toString();
 
-        // Pricing filters: we’ll filter on one “primary” field for now (post),
-        // later you can add price_type=post|reel|story.
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
+        // $payload = (function () use (
+        //     $platform,$category,$location,
+        //     $minFollowers,$maxFollowers,
+        //     $minPrice,$maxPrice,
+        //     $sort,$page,$perPage
+        // ) {
 
-        $sort = $request->string('sort', 'newest')->toString(); // newest | followers_desc
+        //     $query = CreatorProfile::query()
+        //         ->where('status','approved');
 
-        // ✅ Redis cache key (unique per filter combo + page)
-        $cacheKey = 'discovery:creators:' . md5(json_encode([
-            'platform' => $platform ?: null,
-            'category' => $category ?: null,
-            'location' => $location ?: null,
-            'min_followers' => $minFollowers,
-            'max_followers' => $maxFollowers,
-            'min_price' => $minPrice,
-            'max_price' => $maxPrice,
-            'sort' => $sort,
-            'page' => $page,
-            'per_page' => $perPage,
-        ]));
+        //     if ($platform) {
+        //         $query->where('platforms','elemMatch',['platform'=>$platform]);
+        //     }
 
-        // Cache TTL (tune later)
-        $ttlSeconds = 60;
+        //     if ($category) {
+        //         $query->where('categories',$category);
+        //     }
 
-        $payload = Cache::remember($cacheKey, $ttlSeconds, function () use (
-            $platform, $category, $location,
-            $minFollowers, $maxFollowers,
-            $minPrice, $maxPrice,
-            $sort, $page, $perPage
-        ) {
-            $query = CreatorProfile::query()
-                ->where('status', 'approved');
+        //     if ($location) {
+        //         $query->where('location',$location);
+        //     }
 
-            // Platform filter (array of objects)
-            if ($platform) {
-                $query->where('platforms', 'elemMatch', [
-                    'platform' => $platform,
-                ]);
-            }
+        //     if ($minFollowers !== null) {
+        //         $query->where('platforms.followers','>=',$minFollowers);
+        //     }
 
-            // Category filter (array of strings)
-            if ($category) {
-                $query->where('categories', $category);
-            }
+        //     if ($maxFollowers !== null) {
+        //         $query->where('platforms.followers','<=',$maxFollowers);
+        //     }
 
-            // Location filter
-            if ($location) {
-                $query->where('location', $location);
-            }
+        //     if ($minPrice !== null) {
+        //         $query->where('pricing.post','>=',(float)$minPrice);
+        //     }
 
-            // Followers filter (we’ll use max followers among platforms for now)
-            // For performance & correctness at scale, later store a denormalized field like: followers_max
-            if ($minFollowers !== null) {
-                $query->where('platforms.followers', '>=', (int) $minFollowers);
-            }
-            if ($maxFollowers !== null) {
-                $query->where('platforms.followers', '<=', (int) $maxFollowers);
-            }
+        //     if ($maxPrice !== null) {
+        //         $query->where('pricing.post','<=',(float)$maxPrice);
+        //     }
 
-            // Price filter (pricing.post)
-            if ($minPrice !== null && is_numeric($minPrice)) {
-                $query->where('pricing.post', '>=', (float) $minPrice);
-            }
-            if ($maxPrice !== null && is_numeric($maxPrice)) {
-                $query->where('pricing.post', '<=', (float) $maxPrice);
-            }
+        //     $query->orderBy('created_at','desc');
 
-            // Sorting
-            if ($sort === 'followers_desc') {
-                // NOTE: Sorting by nested array field is tricky.
-                // For best performance later add a denormalized field: followers_max and sort on that.
-                // For now we sort by created_at desc as safe fallback if Mongo can’t sort reliably.
-                $query->orderBy('created_at', 'desc');
-            } else {
-                $query->orderBy('created_at', 'desc');
-            }
+        //     $total = (clone $query)->count();
 
-            // Pagination (Mongo skip/limit)
-            $total = (clone $query)->count();
+        //     $items = $query
+        //         ->skip(($page-1)*$perPage)
+        //         ->take($perPage)
+        //         ->get([
+        //             '_id',
+        //             'user_id',
+        //             'display_name',
+        //             'bio',
+        //             'platforms',
+        //             'categories',
+        //             'languages',
+        //             'pricing',
+        //             'location',
+        //             'created_at'
+        //         ])
+        //         ->toArray();
+
+        //     return [
+        //         'total'=>$total,
+        //         'page'=>$page,
+        //         'per_page'=>$perPage,
+        //         'items'=>$items,
+        //     ];
+
+        // })(); // ✅ THIS EXECUTES THE FUNCTION
+
+
+        $payload = (function () use ($page,$perPage) {
+
+        $query = CreatorProfile::query()
+            ->where('status','approved');
+
+        $total = (clone $query)->count();
 
             $items = $query
-                ->skip(($page - 1) * $perPage)
-                ->take($perPage)
-                ->get([
-                    'user_id',
-                    'display_name',
-                    'bio',
-                    'platforms',
-                    'categories',
-                    'languages',
-                    'pricing',
-                    'location',
-                    'verified_at',
-                    'created_at',
-                ]);
+        ->skip(($page - 1) * $perPage)
+        ->take($perPage)
+        ->get([
+            '_id',
+            'user_id',
+            'display_name',
+            'bio',
+            'platforms',
+            'categories',
+            'languages',
+            'pricing',
+            'location',
+            'created_at'
+        ])
+        ->map(function ($item) {
 
             return [
-                'total' => $total,
-                'page' => $page,
-                'per_page' => $perPage,
-                'items' => $items,
+                '_id'          => (string) $item->_id,
+                'user_id'      => $item->user_id,
+                'display_name' => $item->display_name,
+                'bio'          => $item->bio,
+                'platforms'    => $item->platforms,
+                'categories'   => $item->categories,
+                'languages'    => $item->languages,
+                'pricing'      => $item->pricing,
+                'location'     => $item->location,
+                'created_at'   => $item->created_at,
             ];
-        });
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Creators fetched successfully.',
-            'data' => $payload,
+        })
+        ->values()
+        ->toArray();
+
+        return [
+            'total'=>$total,
+            'page'=>$page,
+            'per_page'=>$perPage,
+            'items'=>$items,
+        ];
+
+        })();
+
+
+
+        return Inertia::render('Brand/BrowseCreators', [
+            'creators'=>$payload['items'],
+            'meta'=>[
+                'total'=>$payload['total'],
+                'page'=>$payload['page'],
+                'per_page'=>$payload['per_page'],
+            ]
         ]);
     }
+
+    public function show($id)
+    {
+        $creator = CreatorProfile::where('_id', $id)
+            ->where('status', 'approved')
+            ->first();
+
+        if (!$creator) {
+            abort(404);
+        }
+
+        // ✅ normalize pricing safely
+        $pricing = $creator->pricing ?? [];
+        if (is_object($pricing)) $pricing = (array) $pricing;
+
+        $pricing = array_merge([
+            'post' => 0,
+            'story' => 0,
+            'reel' => 0,
+        ], $pricing);
+
+        return Inertia::render('Brand/CreatorProfile', [
+            'creator' => [
+                '_id'          => (string) $creator->_id,
+                'user_id'      => (int) ($creator->user_id ?? 0),
+                'display_name' => (string) ($creator->display_name ?? ''),
+                'bio'          => (string) ($creator->bio ?? ''),
+                'platforms'    => $creator->platforms ?? [],
+                'categories'   => $creator->categories ?? [],
+                'languages'    => $creator->languages ?? [],
+                'pricing'      => $pricing,
+                'location'     => (string) ($creator->location ?? ''),
+                'created_at'   => $creator->created_at,
+            ]
+        ]);
+    }
+    
+
+    
 }

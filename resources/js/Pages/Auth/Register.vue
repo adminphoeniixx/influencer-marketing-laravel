@@ -1,163 +1,178 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3'
-import AuthenticationCard from '@/Components/AuthenticationCard.vue'
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue'
-import Checkbox from '@/Components/Checkbox.vue'
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
+
+const page = usePage()
+
+// allow /register?role=brand or /register?role=creator
+const roleFromQuery = computed(() => {
+  const q = page.url.includes('?') ? page.url.split('?')[1] : ''
+  const params = new URLSearchParams(q)
+  const r = params.get('role')
+  return r === 'brand' || r === 'creator' ? r : 'creator'
+})
 
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    role: 'creator', // ✅ NEW
-    terms: false,
+  name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
+  role: roleFromQuery.value, // ✅ NEW
+  terms: false,
 })
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    })
+  form.post(route('register'), {
+    onFinish: () => form.reset('password', 'password_confirmation'),
+  })
 }
 </script>
 
 <template>
-    <Head title="Register" />
+  <Head title="Register" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+  <div class="topbar">
+    <div class="container">
+      <div class="nav">
+        <Link href="/" class="brand">
+          <span class="brand-badge"></span>
+          Influencer Platform
+        </Link>
 
-        <form @submit.prevent="submit">
-            <!-- Name -->
+        <div class="cta-row">
+          <Link class="btn btn-ghost" :href="route('login')">Login</Link>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hf-auth-wrap hero">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Left -->
+        <div>
+          <div class="kicker">
+            <span class="kicker-dot"></span>
+            Create your account
+          </div>
+
+          <h1 class="h1">
+            Join as a <span class="glow">Brand</span> or <span class="glow">Creator</span>
+          </h1>
+
+          <p class="sub">
+            Brands find creators fast. Creators get discovered, verified, and booked.
+          </p>
+        </div>
+
+        <!-- Right: Register card -->
+        <div class="card hf-auth-card">
+          <div class="card-title">Register</div>
+          <div class="muted">Choose your role and fill your details.</div>
+
+          <div class="divider"></div>
+
+          <form @submit.prevent="submit">
+            <!-- Role -->
             <div>
-                <InputLabel for="name" value="Name" />
-                <TextInput
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
+              <div class="hf-label">I am a</div>
+              <div class="hf-pill-row">
+                <label class="hf-pill" :class="{ active: form.role === 'creator' }">
+                  <input type="radio" value="creator" v-model="form.role" />
+                  Creator
+                </label>
+
+                <label class="hf-pill" :class="{ active: form.role === 'brand' }">
+                  <input type="radio" value="brand" v-model="form.role" />
+                  Brand
+                </label>
+              </div>
+              <div v-if="form.errors.role" class="hf-error">{{ form.errors.role }}</div>
             </div>
 
-            <!-- Email -->
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
+            <div class="hf-field">
+              <label class="hf-label" for="name">Name</label>
+              <input
+                id="name"
+                v-model="form.name"
+                class="hf-input"
+                type="text"
+                autocomplete="name"
+                required
+                autofocus
+              />
+              <div v-if="form.errors.name" class="hf-error">{{ form.errors.name }}</div>
             </div>
 
-            <!-- Password -->
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+            <div class="hf-field">
+              <label class="hf-label" for="email">Email</label>
+              <input
+                id="email"
+                v-model="form.email"
+                class="hf-input"
+                type="email"
+                autocomplete="username"
+                required
+              />
+              <div v-if="form.errors.email" class="hf-error">{{ form.errors.email }}</div>
             </div>
 
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+            <div class="hf-field">
+              <label class="hf-label" for="password">Password</label>
+              <input
+                id="password"
+                v-model="form.password"
+                class="hf-input"
+                type="password"
+                autocomplete="new-password"
+                required
+              />
+              <div v-if="form.errors.password" class="hf-error">{{ form.errors.password }}</div>
             </div>
 
-            <!-- ✅ REGISTER AS -->
-            <div class="mt-4">
-                <InputLabel for="role" value="Register as" />
-                <select
-                    id="role"
-                    v-model="form.role"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                >
-                    <option value="creator">Creator</option>
-                    <option value="brand">Brand</option>
-                </select>
-                <InputError class="mt-2" :message="form.errors.role" />
+            <div class="hf-field">
+              <label class="hf-label" for="password_confirmation">Confirm password</label>
+              <input
+                id="password_confirmation"
+                v-model="form.password_confirmation"
+                class="hf-input"
+                type="password"
+                autocomplete="new-password"
+                required
+              />
+              <div v-if="form.errors.password_confirmation" class="hf-error">
+                {{ form.errors.password_confirmation }}
+              </div>
             </div>
 
-            <!-- Terms -->
-            <div
-                v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature"
-                class="mt-4"
-            >
-                <InputLabel for="terms">
-                    <div class="flex items-center">
-                        <Checkbox
-                            id="terms"
-                            v-model:checked="form.terms"
-                            name="terms"
-                            required
-                        />
-
-                        <div class="ms-2">
-                            I agree to the
-                            <a
-                                target="_blank"
-                                :href="route('terms.show')"
-                                class="underline text-sm text-gray-600 hover:text-gray-900"
-                            >
-                                Terms of Service
-                            </a>
-                            and
-                            <a
-                                target="_blank"
-                                :href="route('policy.show')"
-                                class="underline text-sm text-gray-600 hover:text-gray-900"
-                            >
-                                Privacy Policy
-                            </a>
-                        </div>
-                    </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
-                </InputLabel>
+            <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="hf-field">
+              <label class="muted" style="display:flex; gap:10px; align-items:flex-start;">
+                <input type="checkbox" v-model="form.terms" />
+                <span>
+                  I agree to the
+                  <a class="hf-link" target="_blank" :href="route('terms.show')">Terms</a>
+                  and
+                  <a class="hf-link" target="_blank" :href="route('policy.show')">Privacy Policy</a>.
+                </span>
+              </label>
+              <div v-if="form.errors.terms" class="hf-error">{{ form.errors.terms }}</div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900"
-                >
-                    Already registered?
-                </Link>
+            <div class="hf-row" style="justify-content: space-between;">
+              <Link class="hf-link" :href="route('login')">Already registered?</Link>
 
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="form.processing"
+                :style="form.processing ? 'opacity:.7; cursor:not-allowed;' : ''"
+              >
+                {{ form.processing ? 'Creating...' : 'Register' }}
+              </button>
             </div>
-        </form>
-    </AuthenticationCard>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

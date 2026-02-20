@@ -8,13 +8,15 @@ require __DIR__ . '/admin.php';
 require __DIR__ . '/app.php';
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Landing', [
         'canLogin'       => Route::has('login'),
         'canRegister'    => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion'     => PHP_VERSION,
     ]);
 });
+
+
 
 /**
  * ✅ Secure /dashboard (Jetstream default) by turning it into a role-based redirect.

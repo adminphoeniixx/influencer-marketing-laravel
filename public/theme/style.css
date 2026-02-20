@@ -1,0 +1,80 @@
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  /* Hero glow blobs */
+  .hero-glow  { background: radial-gradient(ellipse, rgba(200,255,0,0.07) 0%, transparent 70%); }
+  .hero-glow2 { background: radial-gradient(ellipse, rgba(123,92,255,0.08) 0%, transparent 70%); }
+  .visual-glow { background: radial-gradient(circle, rgba(200,255,0,0.1), transparent); }
+  .cta-deco   { background: rgba(200,255,0,0.06); }
+
+  /* Outlined hero text */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px #c8ff00;
+  }
+
+  /* Fluid hero heading */
+  .hero-h1 { font-size: clamp(52px, 8.5vw, 100px); line-height: 1; letter-spacing: -3px; }
+
+  /* Marquee track */
+  .marquee-track { display: flex; gap: 56px; width: max-content; animation: marquee 24s linear infinite; }
+
+  /* Chip active state */
+  .chip.active,
+  .chip:hover {
+    border-color: #c8ff00 !important;
+    color: #c8ff00 !important;
+    background: rgba(200,255,0,0.06) !important;
+  }
+
+  /* Step active state */
+  .step.active {
+    background: #0e0e1a;
+    border-color: rgba(255,255,255,0.07);
+  }
+  .step.active .step-num {
+    color: #c8ff00;
+    border-color: #c8ff00;
+    background: rgba(200,255,0,0.08);
+  }
+
+  /* Card hover */
+  .creator-card:hover {
+    border-color: rgba(200,255,0,0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .creator-card:hover::after {
+    opacity: 1;
+  }
+  .creator-card::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: 20px;
+    background: linear-gradient(135deg, rgba(200,255,0,0.04), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  /* Card action hover */
+  .card-action:hover {
+    background: #c8ff00 !important;
+    color: #000 !important;
+    border-color: #c8ff00 !important;
+  }
+
+  /* Btn ghost hover */
+  .btn-ghost:hover {
+    border-color: #c8ff00;
+    color: #c8ff00;
+  }
+
+  /* Btn primary hover */
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(200,255,0,0.18);
+  }

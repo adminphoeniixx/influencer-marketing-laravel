@@ -5,14 +5,28 @@ use Inertia\Inertia;
 use App\Http\Controllers\Creator\CreatorProfileController;
 use App\Http\Controllers\App\CreatorDiscoveryController;
 use App\Http\Controllers\Creator\CreatorDashboardController;
-
+use App\Http\Controllers\App\BrandDashboardController;
 /**
- * Role-based "app dashboard" entry.
- * We keep /app/dashboard as a redirect so sidebar can point there if needed,
- * but your creator sidebar should ideally point to /app/creator/dashboard-view.
+ * Role-based "app dashboard"
  */
+
+
+
+
+Route::middleware(['auth', 'role:brand'])
+    ->prefix('app/brand')
+    ->group(function () {
+
+        Route::get('/dashboard-view',
+            [BrandDashboardController::class, 'index']
+        )->name('brand.dashboard');
+
+});
+
 Route::middleware(['auth'])->prefix('app')->group(function () {
+
     Route::get('/dashboard', function () {
+
         $user = auth()->user();
 
         if ($user->hasRole('creator')) {
@@ -24,44 +38,100 @@ Route::middleware(['auth'])->prefix('app')->group(function () {
         }
 
         abort(403);
+
     })->name('app.dashboard');
+
 });
 
-/** ───────── Creator dashboard (controller version) ───────── */
+
+/** Creator dashboard controller */
 Route::middleware(['auth', 'role:creator'])->group(function () {
-    Route::get('/app/creator/dashboard', [CreatorDashboardController::class, 'index'])
-        ->name('creator.dashboard.controller');
+
+    Route::get('/app/creator/dashboard',
+        [CreatorDashboardController::class, 'index']
+    )->name('creator.dashboard.controller');
+
 });
 
-/** ───────── Creator dashboard (Inertia view) ───────── */
+
+/** Creator dashboard view */
 Route::middleware(['auth', 'role:creator'])->group(function () {
+
     Route::get('/app/creator/dashboard-view', function () {
+
         return Inertia::render('Creator/Dashboard');
+
     })->name('creator.dashboard');
+
 });
 
-/** ───────── Brand dashboard (Inertia view) ───────── */
+
+/** Brand dashboard view */
 Route::middleware(['auth', 'role:brand'])->group(function () {
+
     Route::get('/app/brand/dashboard-view', function () {
+
         return Inertia::render('Brand/Dashboard');
+
     })->name('brand.dashboard');
+
 });
 
-/** ───────── Creator profile page (Inertia view) ───────── */
+
+/** Creator profile view */
 Route::middleware(['auth', 'role:creator'])->group(function () {
+
     Route::get('/app/creator/profile-view', function () {
+
         return Inertia::render('Creator/ProfileForm');
+
     })->name('creator.profile.view');
+
 });
 
-/** ───────── Creator profile API (axios GET/POST) ───────── */
+
+/** Creator profile API */
 Route::middleware(['auth', 'role:creator'])->group(function () {
-    Route::get('/creator/profile', [CreatorProfileController::class, 'show'])->name('creator.profile.show');
-    Route::post('/creator/profile', [CreatorProfileController::class, 'store'])->name('creator.profile.store');
+
+    Route::get('/creator/profile',
+        [CreatorProfileController::class, 'show']
+    )->name('creator.profile.show');
+
+
+    Route::post('/creator/profile',
+        [CreatorProfileController::class, 'store']
+    )->name('creator.profile.store');
+
 });
 
-/** ───────── Creator discovery (brands can browse; you can keep it auth-only) ───────── */
+
+/** Creator discovery API */
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/app/creators',
+        [CreatorDiscoveryController::class, 'index']
+    )->name('app.creators.index');
+
+});
+
+
+
+Route::middleware(['auth','role:brand'])->group(function () {
+
     Route::get('/app/creators', [CreatorDiscoveryController::class, 'index'])
-        ->name('app.creators.index');
+        ->name('brand.creators.browse');
+
+    Route::get('/app/creators/{id}', [CreatorDiscoveryController::class, 'show'])
+        ->name('brand.creators.show');
+
+});
+
+
+/** ✅ Brand browse creators view */
+Route::middleware(['auth', 'role:brand'])->group(function () {
+
+    Route::get('/app/creators-view',
+        [CreatorDiscoveryController::class, 'index']
+    )->name('brand.creators.browse');
+
 });

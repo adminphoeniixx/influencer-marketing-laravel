@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CreatorLink — Where Brands Meet Creators</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"DM Sans"', 'sans-serif'],
+        },
+        colors: {
+          bg:       '#05050a',
+          surface:  '#0e0e1a',
+          surface2: '#14142a',
+          accent:   '#c8ff00',
+          accent2:  '#7b5cff',
+          textpri:  '#f0f0f8',
+          muted:    '#7070a0',
+        },
+        backgroundImage: {
+          'glow-accent': 'radial-gradient(ellipse, rgba(200,255,0,0.07) 0%, transparent 70%)',
+          'glow-purple': 'radial-gradient(ellipse, rgba(123,92,255,0.08) 0%, transparent 70%)',
+          'glow-sm':     'radial-gradient(circle, rgba(200,255,0,0.1), transparent)',
+        },
+        keyframes: {
+          fadeUp: {
+            '0%':   { opacity: '0', transform: 'translateY(24px)' },
+            '100%': { opacity: '1', transform: 'translateY(0)' },
+          },
+          pulse2: {
+            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+            '50%':      { opacity: '0.5', transform: 'scale(1.4)' },
+          },
+          marquee: {
+            '0%':   { transform: 'translateX(0)' },
+            '100%': { transform: 'translateX(-50%)' },
+          },
+          slideIn: {
+            '0%':   { opacity: '0', transform: 'translateX(20px)' },
+            '100%': { opacity: '1', transform: 'translateX(0)' },
+          },
+        },
+        animation: {
+          'fade-up':   'fadeUp 0.6s ease both',
+          'fade-up-1': 'fadeUp 0.7s 0.1s ease both',
+          'fade-up-2': 'fadeUp 0.7s 0.2s ease both',
+          'fade-up-3': 'fadeUp 0.7s 0.3s ease both',
+          'fade-up-4': 'fadeUp 0.7s 0.4s ease both',
+          'pulse2':    'pulse2 2s infinite',
+          'marquee':   'marquee 24s linear infinite',
+          'slide-in':  'slideIn 0.5s ease both',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  /* Hero glow blobs */
+  .hero-glow  { background: radial-gradient(ellipse, rgba(200,255,0,0.07) 0%, transparent 70%); }
+  .hero-glow2 { background: radial-gradient(ellipse, rgba(123,92,255,0.08) 0%, transparent 70%); }
+  .visual-glow { background: radial-gradient(circle, rgba(200,255,0,0.1), transparent); }
+  .cta-deco   { background: rgba(200,255,0,0.06); }
+
+  /* Outlined hero text */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px #c8ff00;
+  }
+
+  /* Fluid hero heading */
+  .hero-h1 { font-size: clamp(52px, 8.5vw, 100px); line-height: 1; letter-spacing: -3px; }
+
+  /* Marquee track */
+  .marquee-track { display: flex; gap: 56px; width: max-content; animation: marquee 24s linear infinite; }
+
+  /* Chip active state */
+  .chip.active,
+  .chip:hover {
+    border-color: #c8ff00 !important;
+    color: #c8ff00 !important;
+    background: rgba(200,255,0,0.06) !important;
+  }
+
+  /* Step active state */
+  .step.active {
+    background: #0e0e1a;
+    border-color: rgba(255,255,255,0.07);
+  }
+  .step.active .step-num {
+    color: #c8ff00;
+    border-color: #c8ff00;
+    background: rgba(200,255,0,0.08);
+  }
+
+  /* Card hover */
+  .creator-card:hover {
+    border-color: rgba(200,255,0,0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .creator-card:hover::after {
+    opacity: 1;
+  }
+  .creator-card::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: 20px;
+    background: linear-gradient(135deg, rgba(200,255,0,0.04), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  /* Card action hover */
+  .card-action:hover {
+    background: #c8ff00 !important;
+    color: #000 !important;
+    border-color: #c8ff00 !important;
+  }
+
+  /* Btn ghost hover */
+  .btn-ghost:hover {
+    border-color: #c8ff00;
+    color: #c8ff00;
+  }
+
+  /* Btn primary hover */
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(200,255,0,0.18);
+  }
+</style>
+</head>
+
+<body class="bg-bg text-textpri font-sans overflow-x-hidden">
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-15 py-5 backdrop-blur-xl border-b border-white/7"
+     style="background:rgba(5,5,10,0.75); padding: 20px 60px;">
+  <div class="text-[22px] font-extrabold tracking-tight text-textpri">
+    Creator<span class="text-accent">#</span>Link
+  </div>
+  <ul class="hidden md:flex gap-9 list-none">
+    <li><a href="#" class="text-muted text-sm font-medium tracking-wide hover:text-textpri transition-colors no-underline">Discover</a></li>
+    <li><a href="#" class="text-muted text-sm font-medium tracking-wide hover:text-textpri transition-colors no-underline">For Brands</a></li>
+    <li><a href="#" class="text-muted text-sm font-medium tracking-wide hover:text-textpri transition-colors no-underline">For Creators</a></li>
+    <li><a href="#" class="text-muted text-sm font-medium tracking-wide hover:text-textpri transition-colors no-underline">Pricing</a></li>
+  </ul>
+  <div class="flex gap-3 items-center">
+    <button class="btn-ghost px-6 py-2.5 rounded-full border border-white/10 text-textpri text-sm font-medium bg-transparent cursor-pointer transition-all">Log in</button>
+    <button class="btn-primary px-6 py-2.5 rounded-full bg-accent text-black text-sm font-semibold border-none cursor-pointer transition-all">Get Access</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden"
+         style="padding: 120px 40px 80px;">
+
+  <!-- Glow blobs -->
+  <div class="hero-glow absolute pointer-events-none" style="top:15%;left:50%;transform:translateX(-50%);width:700px;height:500px;"></div>
+  <div class="hero-glow2 absolute pointer-events-none" style="top:30%;left:20%;width:400px;height:400px;"></div>
+
+  <!-- Badge -->
+  <div class="animate-fade-up inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full text-accent text-[13px] font-medium"
+       style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);">
+    <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse2 inline-block"></span>
+    ✦ 70,000+ Verified Creators · No Middlemen
+  </div>
+
+  <!-- H1 -->
+  <h1 class="animate-fade-up-1 hero-h1 font-extrabold text-textpri max-w-[920px]">
+    Where <span class="text-outline">Brands</span><br/>Meet Creators
+  </h1>
+
+  <!-- Sub -->
+  <p class="animate-fade-up-2 text-muted text-lg font-light leading-relaxed mt-7 mb-11 max-w-[520px]">
+    A professional network built on signal, not noise. Connect directly with verified creators — no agencies, no gatekeepers, no fluff.
+  </p>
+
+  <!-- Actions -->
+  <div class="animate-fade-up-3 flex gap-4 justify-center flex-wrap">
+    <button class="btn-primary px-9 py-4 rounded-full bg-accent text-black text-base font-semibold border-none cursor-pointer transition-all">Join as a Brand →</button>
+    <button class="btn-ghost px-9 py-4 rounded-full border border-white/10 text-textpri text-base font-medium bg-transparent cursor-pointer transition-all">I'm a Creator</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="animate-fade-up-4 flex gap-16 mt-20 flex-wrap justify-center">
+    <div class="text-center">
+      <div class="text-[38px] font-bold text-textpri tracking-tight">70<span class="text-accent">K+</span></div>
+      <div class="text-muted text-[13px] font-light mt-0.5">Verified Creators</div>
+    </div>
+    <div class="w-px h-10 self-center bg-white/7"></div>
+    <div class="text-center">
+      <div class="text-[38px] font-bold text-textpri tracking-tight">112<span class="text-accent">+</span></div>
+      <div class="text-muted text-[13px] font-light mt-0.5">Categories</div>
+    </div>
+    <div class="w-px h-10 self-center bg-white/7"></div>
+    <div class="text-center">
+      <div class="text-[38px] font-bold text-textpri tracking-tight">100<span class="text-accent">%</span></div>
+      <div class="text-muted text-[13px] font-light mt-0.5">Free to Use</div>
+    </div>
+    <div class="w-px h-10 self-center bg-white/7"></div>
+    <div class="text-center">
+      <div class="text-[38px] font-bold text-textpri tracking-tight">0<span class="text-accent">%</span></div>
+      <div class="text-muted text-[13px] font-light mt-0.5">Agency Fee</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ MARQUEE ═══════════════════════════ -->
+<div class="relative z-10 overflow-hidden py-6 bg-surface border-t border-b border-white/7">
+  <div class="marquee-track">
+    <!-- items × 2 for seamless loop -->
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Fashion</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Beauty</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Fitness</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Tech</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Food & Travel</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Gaming</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Wellness</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Finance</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Music</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Education</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Business</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Sustainability</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Fashion</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Beauty</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Fitness</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Tech</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Food & Travel</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Gaming</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Wellness</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Finance</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Music</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Education</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Business</span>
+    <span class="text-muted text-[13px] font-semibold tracking-widest uppercase whitespace-nowrap flex items-center gap-3"><span class="text-accent text-[10px]">✦</span>Sustainability</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEARCH ════════════════════════════ -->
+<div class="relative z-10 max-w-6xl mx-auto px-15 pt-20 pb-20" style="padding-left:60px;padding-right:60px;">
+  <div class="flex items-center gap-3 bg-surface border border-white/7 rounded-2xl px-5 py-4 focus-within:border-accent/30 transition-colors">
+    <span class="text-muted text-lg shrink-0">🔍</span>
+    <input type="text" placeholder="Search creators by name, niche, city..."
+           class="flex-1 bg-transparent border-none outline-none text-textpri text-[15px] font-light placeholder-muted" />
+    <div class="w-px h-6 bg-white/7"></div>
+    <select class="bg-transparent border-none outline-none text-muted text-sm cursor-pointer">
+      <option>All Categories</option>
+      <option>Fashion</option><option>Beauty</option><option>Fitness</option>
+      <option>Tech</option><option>Food</option><option>Gaming</option><option>Travel</option>
+    </select>
+    <div class="w-px h-6 bg-white/7"></div>
+    <select class="bg-transparent border-none outline-none text-muted text-sm cursor-pointer">
+      <option>All Cities</option>
+      <option>Mumbai</option><option>Delhi</option><option>Bangalore</option>
+      <option>Hyderabad</option><option>Pune</option>
+    </select>
+    <button class="btn-primary px-5 py-2 rounded-full bg-accent text-black text-sm font-semibold border-none cursor-pointer transition-all whitespace-nowrap">Search</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CREATORS ═════════════════════════ -->
+<section class="relative z-10 bg-surface py-28 px-15" style="padding-left:60px;padding-right:60px;">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex justify-between items-end mb-14 flex-wrap gap-6">
+      <div>
+        <div class="text-accent text-[11px] font-semibold tracking-[0.15em] uppercase mb-4">✦ Discover</div>
+        <h2 class="text-[clamp(34px,5vw,58px)] font-extrabold tracking-tight leading-[1.05]">
+          Top Creators<br/>This Week
+        </h2>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="chip active border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">All</button>
+        <button class="chip border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">Fashion</button>
+        <button class="chip border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">Fitness</button>
+        <button class="chip border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">Tech</button>
+        <button class="chip border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">Food</button>
+        <button class="chip border border-white/7 text-muted px-4 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all bg-transparent">Travel</button>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+
+      <!-- Card -->
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">🎨</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Ananya Sharma</div>
+        <div class="text-muted text-[13px] mb-4">@ananyacreates · Mumbai</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Fashion</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Lifestyle</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Travel</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">1.2M</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">6.4%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Open</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">🏋️</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Rohan Kapoor</div>
+        <div class="text-muted text-[13px] mb-4">@rohanfits · Delhi</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Fitness</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Wellness</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Nutrition</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">890K</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">8.1%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Paid</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">💻</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Priya Nair</div>
+        <div class="text-muted text-[13px] mb-4">@priyatech · Bangalore</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Tech</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">AI</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Reviews</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">540K</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">11.2%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Open</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">🍜</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Vikram Reddy</div>
+        <div class="text-muted text-[13px] mb-4">@foodyvik · Hyderabad</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Food</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Restaurants</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Travel</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">2.1M</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">5.8%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Open</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">✈️</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Meera Joshi</div>
+        <div class="text-muted text-[13px] mb-4">@meera.goes · Pune</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Travel</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Luxury</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Photography</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">330K</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">9.7%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Both</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+      <div class="creator-card relative bg-bg border border-white/7 rounded-[20px] p-7 cursor-pointer transition-all duration-300 overflow-hidden">
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/7">🎮</div>
+          <div class="text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);color:#a78bfa;">✓ Verified</div>
+        </div>
+        <div class="text-[18px] font-bold tracking-tight mb-1">Arjun Singh</div>
+        <div class="text-muted text-[13px] mb-4">@arjungames · Chennai</div>
+        <div class="flex gap-1.5 flex-wrap mb-5">
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Gaming</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Esports</span>
+          <span class="bg-surface2 text-muted text-[11px] font-medium px-3 py-1 rounded-full">Tech</span>
+        </div>
+        <div class="flex gap-5 pt-5 border-t border-white/7">
+          <div><div class="text-[16px] font-bold">780K</div><div class="text-[11px] text-muted">Followers</div></div>
+          <div><div class="text-[16px] font-bold">12.4%</div><div class="text-[11px] text-muted">Eng. Rate</div></div>
+          <div><div class="text-[16px] font-bold">Paid</div><div class="text-[11px] text-muted">Barter</div></div>
+        </div>
+        <button class="card-action mt-5 w-full bg-surface border border-white/7 text-textpri py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all">Connect → WhatsApp</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ HOW IT WORKS ══════════════════════ -->
+<section class="relative z-10">
+  <div class="max-w-6xl mx-auto px-15 py-28 grid md:grid-cols-2 gap-20 items-center" style="padding-left:60px;padding-right:60px;">
+
+    <div>
+      <div class="text-accent text-[11px] font-semibold tracking-[0.15em] uppercase mb-4">✦ The Process</div>
+      <h2 class="text-[clamp(34px,5vw,58px)] font-extrabold tracking-tight leading-[1.05]">
+        From Search<br/>to Collab<br/>in Minutes
+      </h2>
+
+      <div class="flex flex-col gap-9 mt-12">
+        <div class="step active flex gap-6 items-start p-6 rounded-2xl border border-transparent cursor-pointer transition-all" onclick="setActive(this)">
+          <div class="step-num min-w-[44px] h-11 border border-white/7 rounded-xl flex items-center justify-center font-bold text-[15px] text-muted transition-all">01</div>
+          <div>
+            <div class="font-bold text-[18px] tracking-tight mb-1.5">Verify & Access</div>
+            <div class="text-muted text-sm leading-relaxed">Get verified in minutes. No waitlists, no paywalls. Just meet the bar and you're in.</div>
+          </div>
+        </div>
+        <div class="step flex gap-6 items-start p-6 rounded-2xl border border-transparent cursor-pointer transition-all" onclick="setActive(this)">
+          <div class="step-num min-w-[44px] h-11 border border-white/7 rounded-xl flex items-center justify-center font-bold text-[15px] text-muted transition-all">02</div>
+          <div>
+            <div class="font-bold text-[18px] tracking-tight mb-1.5">Search & Filter</div>
+            <div class="text-muted text-sm leading-relaxed">Find creators by category, city, engagement rate, language, and barter availability.</div>
+          </div>
+        </div>
+        <div class="step flex gap-6 items-start p-6 rounded-2xl border border-transparent cursor-pointer transition-all" onclick="setActive(this)">
+          <div class="step-num min-w-[44px] h-11 border border-white/7 rounded-xl flex items-center justify-center font-bold text-[15px] text-muted transition-all">03</div>
+          <div>
+            <div class="font-bold text-[18px] tracking-tight mb-1.5">Connect Directly</div>
+            <div class="text-muted text-sm leading-relaxed">Call or WhatsApp creators directly. No middlemen, no agency fees, no platform interference.</div>
+          </div>
+        </div>
+        <div class="step flex gap-6 items-start p-6 rounded-2xl border border-transparent cursor-pointer transition-all" onclick="setActive(this)">
+          <div class="step-num min-w-[44px] h-11 border border-white/7 rounded-xl flex items-center justify-center font-bold text-[15px] text-muted transition-all">04</div>
+          <div>
+            <div class="font-bold text-[18px] tracking-tight mb-1.5">Collaborate & Track</div>
+            <div class="text-muted text-sm leading-relaxed">Manage relationships, post campaign briefs, and track your team's outreach — all in one place.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual panel -->
+    <div class="relative bg-surface border border-white/7 rounded-3xl p-10 min-h-[460px] overflow-hidden">
+      <div class="visual-glow absolute pointer-events-none rounded-full" style="top:-60px;right:-60px;width:220px;height:220px;"></div>
+
+      <div class="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted mb-6">✦ Live Activity</div>
+
+      <!-- Mini profiles -->
+      <div class="animate-slide-in bg-surface2 border border-white/7 rounded-2xl px-6 py-5 flex items-center gap-4 mb-3">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0" style="background:rgba(200,255,0,0.1);">🎨</div>
+        <div><div class="font-semibold text-[15px]">Ananya Sharma</div><div class="text-[12px] text-muted">Fashion · Mumbai · 1.2M</div></div>
+        <div class="ml-auto text-accent text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(200,255,0,0.1);">CONTACTED</div>
+      </div>
+      <div class="animate-slide-in bg-surface2 border border-white/7 rounded-2xl px-6 py-5 flex items-center gap-4 mb-3" style="animation-delay:0.15s;">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0" style="background:rgba(123,92,255,0.1);">🏋️</div>
+        <div><div class="font-semibold text-[15px]">Rohan Kapoor</div><div class="text-[12px] text-muted">Fitness · Delhi · 890K</div></div>
+        <div class="ml-auto text-[#a78bfa] text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(123,92,255,0.1);">SAVED</div>
+      </div>
+      <div class="animate-slide-in bg-surface2 border border-white/7 rounded-2xl px-6 py-5 flex items-center gap-4 mb-3" style="animation-delay:0.3s;">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0" style="background:rgba(200,255,0,0.1);">💻</div>
+        <div><div class="font-semibold text-[15px]">Priya Nair</div><div class="text-[12px] text-muted">Tech · Bangalore · 540K</div></div>
+        <div class="ml-auto text-accent text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(200,255,0,0.1);">CONTACTED</div>
+      </div>
+
+      <!-- Campaign brief -->
+      <div class="mt-7 p-5 bg-bg rounded-2xl border border-white/7">
+        <div class="text-[11px] text-muted mb-3 tracking-wide">Campaign Brief · Active</div>
+        <div class="font-bold text-[16px] mb-2">Summer Collection Launch</div>
+        <div class="text-[13px] text-muted">Looking for Fashion + Lifestyle creators for a 3-reel campaign. Budget ₹50K–₹2L.</div>
+        <div class="flex gap-2 mt-4">
+          <span class="text-accent text-[11px] font-semibold px-3 py-1 rounded-full" style="background:rgba(200,255,0,0.1);">12 Interested</span>
+          <span class="text-muted text-[11px] px-3 py-1 rounded-full bg-surface2">4 days left</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CTA ══════════════════════════════ -->
+<section class="relative z-10">
+  <div class="max-w-6xl mx-auto px-15 py-28 grid md:grid-cols-2 gap-6" style="padding-left:60px;padding-right:60px;">
+
+    <!-- Creators CTA -->
+    <div class="relative rounded-[28px] p-16 overflow-hidden border border-white/7"
+         style="background:linear-gradient(135deg,#0e0e1a,#1a1a36);">
+      <div class="text-muted text-[11px] font-semibold tracking-[0.15em] uppercase mb-4">For Creators</div>
+      <div class="text-[38px] font-extrabold tracking-tight leading-[1.1] mb-4">Get Discovered.<br/>Own the Deal.</div>
+      <p class="text-muted text-base leading-relaxed mb-9">Build your professional profile, get found by verified brands, and take full control of your collaborations. No spam, only serious opportunities.</p>
+      <button class="btn-ghost px-9 py-4 rounded-full border border-white/10 text-textpri text-base font-medium bg-transparent cursor-pointer transition-all">Apply as Creator →</button>
+      <div class="cta-deco absolute bottom-[-30px] right-[-30px] w-[200px] h-[200px] rounded-full"></div>
+    </div>
+
+    <!-- Brands CTA -->
+    <div class="relative rounded-[28px] p-16 overflow-hidden bg-accent">
+      <div class="text-black/50 text-[11px] font-semibold tracking-[0.15em] uppercase mb-4">For Brands</div>
+      <div class="text-[38px] font-extrabold tracking-tight leading-[1.1] mb-4 text-black">Find. Connect.<br/>Launch.</div>
+      <p class="text-black/65 text-base leading-relaxed mb-9">Access 70,000+ verified creators across every niche. Search, filter, and reach out directly — no agency markup, no platform lock-in.</p>
+      <button class="px-9 py-4 rounded-full bg-black text-accent text-base font-semibold border-none cursor-pointer transition-all hover:opacity-90">Start Free →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="relative z-10 border-t border-white/7 px-15 py-16 flex justify-between items-center flex-wrap gap-6" style="padding-left:60px;padding-right:60px;">
+  <div class="text-[20px] font-extrabold tracking-tight text-textpri">Creator<span class="text-accent">#</span>Link</div>
+  <div class="flex gap-8 flex-wrap">
+    <a href="#" class="text-muted text-sm no-underline hover:text-textpri transition-colors">Privacy</a>
+    <a href="#" class="text-muted text-sm no-underline hover:text-textpri transition-colors">Terms</a>
+    <a href="#" class="text-muted text-sm no-underline hover:text-textpri transition-colors">About</a>
+    <a href="#" class="text-muted text-sm no-underline hover:text-textpri transition-colors">Blog</a>
+    <a href="#" class="text-muted text-sm no-underline hover:text-textpri transition-colors">Contact</a>
+  </div>
+  <div class="text-muted text-[13px]">© 2026 CreatorLink. Built for signal.</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  function setActive(el) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>

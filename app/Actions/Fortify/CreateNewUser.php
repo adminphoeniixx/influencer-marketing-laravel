@@ -3,42 +3,67 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
-use Spatie\Permission\Models\Role;
 
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
-    /**
-     * Validate and create a newly registered user.
-     *
-     * @param  array<string, mixed>  $input
-     */
     public function create(array $input): User
     {
         Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+
+            'name' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users'
+            ],
+
             'password' => $this->passwordRules(),
-            'role' => ['required', 'in:creator,brand'], // ✅ NEW
+
+            'role' => [
+                'required',
+                'in:creator,brand'
+            ],
+
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature()
                 ? ['accepted', 'required']
                 : [],
+
         ])->validate();
 
-        $user = User::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-        ]);
 
-        // ✅ Assign selected role
-        $user->assignRole($input['role']);
+        return DB::transaction(function () use ($input) {
 
-        return $user;
+            $user = User::create([
+
+                'name' => $input['name'],
+
+                'email' => strtolower($input['email']),
+
+                'password' => Hash::make($input['password']),
+
+            ]);
+
+
+            // assign role safely
+            $user->assignRole($input['role']);
+
+
+            return $user;
+        });
+
     }
 }

@@ -25,12 +25,13 @@ class CreatorProfile extends Model
     ];
 
     protected $casts = [
-        'user_id'      => 'integer',
-        'categories'   => 'array',
-        'languages'    => 'array',
-        'platforms'    => 'array',
-        'submitted_at' => 'datetime',
-        'approved_at'  => 'datetime',
-        'rejected_at'  => 'datetime',
+    'user_id'      => 'integer',
+    'categories'   => 'array',
+    'languages'    => 'array',
+    'platforms'    => 'array',
+    'pricing'      => 'array',   // ✅ ADD THIS LINE
+    'submitted_at' => 'datetime',
+    'approved_at'  => 'datetime',
+    'rejected_at'  => 'datetime',
     ];
 }
